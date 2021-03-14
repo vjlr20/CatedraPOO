@@ -10,5 +10,5 @@ package sv.edu.udb.util;
  * @author Victor López
  */
 public class Validaciones {
-    
+    // Validaciones necesarias para el ingreso de datos
 }
