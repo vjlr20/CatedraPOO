@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-03-2021 a las 23:54:47
+-- Tiempo de generación: 15-03-2021 a las 01:23:30
 -- Versión del servidor: 10.1.35-MariaDB
 -- Versión de PHP: 8.0.2
 
@@ -49,6 +49,7 @@ CREATE TABLE `caso` (
 CREATE TABLE `departamento` (
   `departamento_id` int(11) NOT NULL,
   `departamento` varchar(30) NOT NULL,
+  `jefe` int(11) DEFAULT NULL,
   `fecha_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -56,11 +57,11 @@ CREATE TABLE `departamento` (
 -- Volcado de datos para la tabla `departamento`
 --
 
-INSERT INTO `departamento` (`departamento_id`, `departamento`, `fecha_registro`) VALUES
-(1, 'Finanzas', '2021-03-14 20:58:35'),
-(2, 'Ventas', '2021-03-14 20:58:35'),
-(3, 'Facturación fija', '2021-03-14 20:58:56'),
-(4, 'Facturación móvil', '2021-03-14 20:58:56');
+INSERT INTO `departamento` (`departamento_id`, `departamento`, `jefe`, `fecha_registro`) VALUES
+(1, 'Finanzas', NULL, '2021-03-14 20:58:35'),
+(2, 'Ventas', NULL, '2021-03-14 20:58:35'),
+(3, 'Facturación fija', NULL, '2021-03-14 20:58:56'),
+(4, 'Facturación móvil', NULL, '2021-03-14 20:58:56');
 
 -- --------------------------------------------------------
 
@@ -227,7 +228,8 @@ ALTER TABLE `caso`
 -- Indices de la tabla `departamento`
 --
 ALTER TABLE `departamento`
-  ADD PRIMARY KEY (`departamento_id`);
+  ADD PRIMARY KEY (`departamento_id`),
+  ADD KEY `jefe` (`jefe`);
 
 --
 -- Indices de la tabla `estado_caso`
@@ -361,6 +363,12 @@ ALTER TABLE `caso`
   ADD CONSTRAINT `caso_ibfk_2` FOREIGN KEY (`programador`) REFERENCES `usuarios` (`usuario_id`),
   ADD CONSTRAINT `caso_ibfk_3` FOREIGN KEY (`tester`) REFERENCES `usuarios` (`usuario_id`),
   ADD CONSTRAINT `caso_ibfk_4` FOREIGN KEY (`estado`) REFERENCES `estado_caso` (`estado_caso_id`);
+
+--
+-- Filtros para la tabla `departamento`
+--
+ALTER TABLE `departamento`
+  ADD CONSTRAINT `departamento_ibfk_1` FOREIGN KEY (`jefe`) REFERENCES `usuarios` (`usuario_id`);
 
 --
 -- Filtros para la tabla `observaciones`
