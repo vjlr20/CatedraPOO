@@ -10,14 +10,14 @@ package sv.edu.udb.jefe;
  * @author Victor López
  */
 public class SolicitudesListado extends javax.swing.JInternalFrame {
-
+    // @Victor5032 que ondas
     /**
      * Creates new form SolicitudesListado
      */
     public SolicitudesListado() {
         initComponents();
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
