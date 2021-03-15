@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-03-2021 a las 01:23:30
+-- Tiempo de generación: 15-03-2021 a las 01:33:28
 -- Versión del servidor: 10.1.35-MariaDB
 -- Versión de PHP: 8.0.2
 
@@ -20,6 +20,19 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `catedra`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `bitacora`
+--
+
+CREATE TABLE `bitacora` (
+  `bitacora_id` int(11) NOT NULL,
+  `caso_id` int(11) NOT NULL,
+  `descripcion` text NOT NULL,
+  `fecha_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -215,6 +228,13 @@ INSERT INTO `usuarios` (`usuario_id`, `tipo_usuario`, `usuario`, `nombres`, `ape
 --
 
 --
+-- Indices de la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  ADD PRIMARY KEY (`bitacora_id`),
+  ADD KEY `caso_id` (`caso_id`);
+
+--
 -- Indices de la tabla `caso`
 --
 ALTER TABLE `caso`
@@ -292,6 +312,12 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  MODIFY `bitacora_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `caso`
 --
 ALTER TABLE `caso`
@@ -354,6 +380,12 @@ ALTER TABLE `usuarios`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `bitacora`
+--
+ALTER TABLE `bitacora`
+  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`caso_id`) REFERENCES `caso` (`caso_id`);
 
 --
 -- Filtros para la tabla `caso`
