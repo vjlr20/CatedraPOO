@@ -4,6 +4,10 @@
  * and open the template in the editor.
  */
 package sv.edu.udb.mdi;
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import sv.edu.udb.jefe.SolicitudesListado;
 
 /**
  *
@@ -35,7 +39,7 @@ public class JefeAreasFuncionales extends javax.swing.JFrame {
         saveAsMenuItem = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
-        cutMenuItem = new javax.swing.JMenuItem();
+        SolicitudesMenuItem = new javax.swing.JMenuItem();
         copyMenuItem = new javax.swing.JMenuItem();
         pasteMenuItem = new javax.swing.JMenuItem();
         deleteMenuItem = new javax.swing.JMenuItem();
@@ -73,11 +77,16 @@ public class JefeAreasFuncionales extends javax.swing.JFrame {
         menuBar.add(fileMenu);
 
         editMenu.setMnemonic('e');
-        editMenu.setText("Edit");
+        editMenu.setText("Solicitudes");
 
-        cutMenuItem.setMnemonic('t');
-        cutMenuItem.setText("Cut");
-        editMenu.add(cutMenuItem);
+        SolicitudesMenuItem.setMnemonic('t');
+        SolicitudesMenuItem.setText("Solicitudes");
+        SolicitudesMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SolicitudesMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(SolicitudesMenuItem);
 
         copyMenuItem.setMnemonic('y');
         copyMenuItem.setText("Copy");
@@ -126,6 +135,19 @@ public class JefeAreasFuncionales extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
+    private void SolicitudesMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SolicitudesMenuItemActionPerformed
+        // TODO add your handling code here:
+        if(SolicitudesListado.bandera == 0){
+            try {
+                SolicitudesListado SL = new SolicitudesListado();
+                desktopPane.add(SL);
+                SL.show();
+            } catch (SQLException ex) {
+                Logger.getLogger(JefeAreasFuncionales.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_SolicitudesMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -162,10 +184,10 @@ public class JefeAreasFuncionales extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem SolicitudesMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem contentMenuItem;
     private javax.swing.JMenuItem copyMenuItem;
-    private javax.swing.JMenuItem cutMenuItem;
     private javax.swing.JMenuItem deleteMenuItem;
     private javax.swing.JDesktopPane desktopPane;
     private javax.swing.JMenu editMenu;
