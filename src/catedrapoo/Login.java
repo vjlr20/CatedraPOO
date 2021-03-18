@@ -177,13 +177,13 @@ public class Login extends javax.swing.JFrame {
                 
                 if (resultado.getRow() > 0) {
                     tipoUsuario = resultado.getInt(3);
+                    
+                    mostrarVentana(tipoUsuario, usuario);
                 } else {
                     JOptionPane.showMessageDialog(null, "Usuario o clave incorrecta", "Error al ingresar", JOptionPane.ERROR_MESSAGE);
                 }
                 
                 resultado.close();
-                
-                mostrarVentana(tipoUsuario, usuario);
             } catch (SQLException ex) {           
                 System.out.println(ex.getMessage()); 
                 // registroLog.registrarLog(Logger.getLogger(Login.class.getName()), ex.getMessage(), Login.class.getName());
