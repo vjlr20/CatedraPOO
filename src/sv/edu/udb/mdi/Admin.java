@@ -9,6 +9,10 @@ package sv.edu.udb.mdi;
  *
  * @author Victor López
  */
+
+import java.sql.*;
+import sv.edu.udb.admin.*;
+
 public class Admin extends javax.swing.JFrame {
 
     /**
@@ -16,6 +20,7 @@ public class Admin extends javax.swing.JFrame {
      */
     public Admin() {
         initComponents();
+        setExtendedState(Admin.MAXIMIZED_BOTH);
     }
 
     /**
@@ -30,79 +35,70 @@ public class Admin extends javax.swing.JFrame {
         desktopPane = new javax.swing.JDesktopPane();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
-        openMenuItem = new javax.swing.JMenuItem();
-        saveMenuItem = new javax.swing.JMenuItem();
-        saveAsMenuItem = new javax.swing.JMenuItem();
-        exitMenuItem = new javax.swing.JMenuItem();
+        listadoDepaMenuItem = new javax.swing.JMenuItem();
+        formDepaMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         cutMenuItem = new javax.swing.JMenuItem();
         copyMenuItem = new javax.swing.JMenuItem();
-        pasteMenuItem = new javax.swing.JMenuItem();
-        deleteMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
-        contentMenuItem = new javax.swing.JMenuItem();
-        aboutMenuItem = new javax.swing.JMenuItem();
+        listadoDesarrolloMenuItem = new javax.swing.JMenuItem();
+        DesarrolloManteMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         fileMenu.setMnemonic('f');
-        fileMenu.setText("File");
+        fileMenu.setText("Departamentos");
 
-        openMenuItem.setMnemonic('o');
-        openMenuItem.setText("Open");
-        fileMenu.add(openMenuItem);
+        listadoDepaMenuItem.setMnemonic('o');
+        listadoDepaMenuItem.setText("Listado");
+        fileMenu.add(listadoDepaMenuItem);
 
-        saveMenuItem.setMnemonic('s');
-        saveMenuItem.setText("Save");
-        fileMenu.add(saveMenuItem);
-
-        saveAsMenuItem.setMnemonic('a');
-        saveAsMenuItem.setText("Save As ...");
-        saveAsMenuItem.setDisplayedMnemonicIndex(5);
-        fileMenu.add(saveAsMenuItem);
-
-        exitMenuItem.setMnemonic('x');
-        exitMenuItem.setText("Exit");
-        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitMenuItemActionPerformed(evt);
-            }
-        });
-        fileMenu.add(exitMenuItem);
+        formDepaMenuItem.setMnemonic('s');
+        formDepaMenuItem.setText("Mantenimiento");
+        fileMenu.add(formDepaMenuItem);
 
         menuBar.add(fileMenu);
 
         editMenu.setMnemonic('e');
-        editMenu.setText("Edit");
+        editMenu.setText("Jefes de departamentos");
 
         cutMenuItem.setMnemonic('t');
-        cutMenuItem.setText("Cut");
+        cutMenuItem.setText("Listado");
+        cutMenuItem.setToolTipText("");
+        cutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cutMenuItemActionPerformed(evt);
+            }
+        });
         editMenu.add(cutMenuItem);
 
         copyMenuItem.setMnemonic('y');
-        copyMenuItem.setText("Copy");
+        copyMenuItem.setText("Mantenimiento");
         editMenu.add(copyMenuItem);
-
-        pasteMenuItem.setMnemonic('p');
-        pasteMenuItem.setText("Paste");
-        editMenu.add(pasteMenuItem);
-
-        deleteMenuItem.setMnemonic('d');
-        deleteMenuItem.setText("Delete");
-        editMenu.add(deleteMenuItem);
 
         menuBar.add(editMenu);
 
         helpMenu.setMnemonic('h');
-        helpMenu.setText("Help");
+        helpMenu.setText("Jefes de desarrollo");
 
-        contentMenuItem.setMnemonic('c');
-        contentMenuItem.setText("Contents");
-        helpMenu.add(contentMenuItem);
+        listadoDesarrolloMenuItem.setMnemonic('c');
+        listadoDesarrolloMenuItem.setText("Listado");
+        listadoDesarrolloMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                listadoDesarrolloMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(listadoDesarrolloMenuItem);
 
-        aboutMenuItem.setMnemonic('a');
-        aboutMenuItem.setText("About");
-        helpMenu.add(aboutMenuItem);
+        DesarrolloManteMenuItem.setMnemonic('a');
+        DesarrolloManteMenuItem.setText("Mantenimiento");
+        DesarrolloManteMenuItem.setName("DesarrolloManteMenuItem"); // NOI18N
+        DesarrolloManteMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DesarrolloManteMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(DesarrolloManteMenuItem);
 
         menuBar.add(helpMenu);
 
@@ -122,9 +118,41 @@ public class Admin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_exitMenuItemActionPerformed
+    private void cutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cutMenuItemActionPerformed
+        
+    }//GEN-LAST:event_cutMenuItemActionPerformed
+
+    private void listadoDesarrolloMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listadoDesarrolloMenuItemActionPerformed
+        try {
+            if (JefesDesarrolloListado.bandera == 0) {
+                JefesDesarrolloListado jefesDesarrolloListado = new JefesDesarrolloListado();
+
+                desktopPane.add(jefesDesarrolloListado);
+                jefesDesarrolloListado.show();
+
+                JefesDesarrolloListado.bandera = 1;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            // Logger.getLogger(MDI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_listadoDesarrolloMenuItemActionPerformed
+
+    private void DesarrolloManteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DesarrolloManteMenuItemActionPerformed
+        try {
+            if (JefesDesarrolloMantenimiento.bandera == 0) {
+                JefesDesarrolloMantenimiento jefesDesarrolloMantenimiento = new JefesDesarrolloMantenimiento();
+
+                desktopPane.add(jefesDesarrolloMantenimiento);
+                jefesDesarrolloMantenimiento.show();
+
+                JefesDesarrolloMantenimiento.bandera = 1;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            // Logger.getLogger(MDI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_DesarrolloManteMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -162,21 +190,17 @@ public class Admin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem aboutMenuItem;
-    private javax.swing.JMenuItem contentMenuItem;
+    private javax.swing.JMenuItem DesarrolloManteMenuItem;
     private javax.swing.JMenuItem copyMenuItem;
     private javax.swing.JMenuItem cutMenuItem;
-    private javax.swing.JMenuItem deleteMenuItem;
     private javax.swing.JDesktopPane desktopPane;
     private javax.swing.JMenu editMenu;
-    private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenuItem formDepaMenuItem;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenuItem listadoDepaMenuItem;
+    private javax.swing.JMenuItem listadoDesarrolloMenuItem;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem openMenuItem;
-    private javax.swing.JMenuItem pasteMenuItem;
-    private javax.swing.JMenuItem saveAsMenuItem;
-    private javax.swing.JMenuItem saveMenuItem;
     // End of variables declaration//GEN-END:variables
 
 }
