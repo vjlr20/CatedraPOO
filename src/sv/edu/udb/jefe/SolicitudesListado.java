@@ -7,6 +7,8 @@ package sv.edu.udb.jefe;
 
 import com.toedter.calendar.JDateChooser;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,17 +16,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import sv.edu.udb.db.Conexion;
-import java.time.format.DateTimeFormatter;
-import java.time.LocalDateTime;
-import sun.security.krb5.internal.rcache.DflCache;
 
 /**
  *
  * @author Victor López
  */
 public class SolicitudesListado extends javax.swing.JInternalFrame {
-
-    // @Victor5032 que ondas
+    public ArrayList<String> areas = null;
+    
     /**
      * Creates new form SolicitudesListado
      */
@@ -43,9 +42,13 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
     Conexion conexionDB = new Conexion();
     public static int bandera = 0;
 
-    public SolicitudesListado() throws SQLException {
+    public SolicitudesListado(ArrayList<String> areasUsuario) throws SQLException {
         bandera = 1;
+        
+        areas = areasUsuario;
+        
         initComponents();
+        
 //        metodos llenado de combobox
         llenadoDepartamentos();
         llenadoTipoSolicitud();
@@ -59,8 +62,18 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
 
 //    llenado de comboBox Departamentos
     public void llenadoDepartamentos() {
+        String sql = "SELECT * FROM departamento WHERE ";
+        // .out.println(areas);
+        for (int i = 0; i < areas.size(); i++) {
+            if (i == (areas.size() - 1)) {
+                sql += "departamento_id = " + areas.get(i);
+            } else {
+                sql += "departamento_id = " + areas.get(i) + " OR ";
+            }
+        }
+        // System.out.println(sql);
         try {
-            conexionDB.setRs("SELECT * FROM departamento");
+            conexionDB.setRs(sql);
             ArrayList<String> departamentos = new ArrayList<>();
             rs = conexionDB.getRs();
             while (rs.next()) {
@@ -100,8 +113,6 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
             while (rs.next()) {
                 estadoCaso.add(rs.getString(2));
             }
-            jComboBoxEstado.setModel(new DefaultComboBoxModel<String>(estadoCaso.toArray(new String[0])));
-            jComboBoxNewEstado.setModel(new DefaultComboBoxModel<String>(estadoCaso.toArray(new String[0])));
         } catch (SQLException ex) {
             Logger.getLogger(SolicitudesListado.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -111,7 +122,16 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
 //    llenado de JtableListaSolicitudes
 
     public void llenadoListadoSolicitudes() {
-
+        String sql = "SELECT * FROM solicitud WHERE ";
+        
+        for (int i = 0; i < areas.size(); i++) {
+            if (i == (areas.size() - 1)) {
+                sql += "departamento_id = " + areas.get(i) + " AND estado = 3";
+            } else {
+                sql += "departamento_id = " + areas.get(i) + " OR ";
+            }
+        }
+        
         try {
             Object[][] data = null;
             String[] columna = {
@@ -119,7 +139,7 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
             };
             listadoSolictudesModel = new DefaultTableModel(data, columna);
             this.jTableListado.setModel(listadoSolictudesModel);
-            conexionDB.setRs("SELECT * FROM solicitud");
+            conexionDB.setRs(sql);
             rs = conexionDB.getRs();
             while (rs.next()) {
                 Object[] nuevaColumna = {rs.getInt(1), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7),};
@@ -147,17 +167,12 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
         jTextFieldTituloSolicitud = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaDescripcion = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextAreaObservacion = new javax.swing.JTextArea();
         jComboBoxDepartamentos = new javax.swing.JComboBox<>();
         jComboBoxSolicitud = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jComboBoxEstado = new javax.swing.JComboBox<>();
-        jLabel6 = new javax.swing.JLabel();
         jButtonCrearNuevaSolicitud = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -178,12 +193,8 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
         jLabel15 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextAreaDescripup = new javax.swing.JTextArea();
-        jLabel16 = new javax.swing.JLabel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        jTextAreaObservacionesUp = new javax.swing.JTextArea();
         jLabel17 = new javax.swing.JLabel();
         jLabel1EstadoActu = new javax.swing.JLabel();
-        jComboBoxNewEstado = new javax.swing.JComboBox<>();
         jButtonActualizar = new javax.swing.JButton();
         jButtonDelete = new javax.swing.JButton();
 
@@ -240,21 +251,13 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
 
         jLabel2.setText("Descripción : ");
 
-        jLabel3.setText("Observaciones: ");
-
         jTextAreaDescripcion.setColumns(20);
         jTextAreaDescripcion.setRows(5);
         jScrollPane1.setViewportView(jTextAreaDescripcion);
 
-        jTextAreaObservacion.setColumns(20);
-        jTextAreaObservacion.setRows(5);
-        jScrollPane2.setViewportView(jTextAreaObservacion);
-
         jLabel4.setText("Asigne un departamento : ");
 
         jLabel5.setText("Tipo de solicitud : ");
-
-        jLabel6.setText("Estado :");
 
         jButtonCrearNuevaSolicitud.setText("Crear nueva solicitud");
         jButtonCrearNuevaSolicitud.addActionListener(new java.awt.event.ActionListener() {
@@ -269,23 +272,15 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
-                .addGap(23, 23, 23)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 208, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                .addComponent(jLabel2)
+                .addGap(38, 38, 38)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 214, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel5))
+                        .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBoxEstado, 0, 238, Short.MAX_VALUE)
-                            .addComponent(jComboBoxSolicitud, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jComboBoxSolicitud, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -300,21 +295,13 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(39, 39, 39)
-                                .addComponent(jLabel2)))
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(32, 32, 32)
-                                .addComponent(jLabel3))))
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGap(39, 39, 39)
+                            .addComponent(jLabel2)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(30, 30, 30)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -323,12 +310,8 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jComboBoxSolicitud, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBoxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
+                            .addComponent(jLabel5))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 158, Short.MAX_VALUE)
                 .addComponent(jButtonCrearNuevaSolicitud)
                 .addGap(50, 50, 50))
         );
@@ -398,12 +381,6 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
         jTextAreaDescripup.setRows(5);
         jScrollPane3.setViewportView(jTextAreaDescripup);
 
-        jLabel16.setText("Editar observaciones ");
-
-        jTextAreaObservacionesUp.setColumns(20);
-        jTextAreaObservacionesUp.setRows(5);
-        jScrollPane5.setViewportView(jTextAreaObservacionesUp);
-
         jLabel17.setText("Estado actual : ");
 
         jLabel1EstadoActu.setText("____");
@@ -439,30 +416,9 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel4Layout.createSequentialGroup()
-                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel16)
-                                        .addComponent(jLabel15))
-                                    .addGap(52, 52, 52)
-                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane5)
-                                        .addComponent(jScrollPane3)))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                                    .addComponent(jLabel17)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(jLabel1EstadoActu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jComboBoxNewEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel4Layout.createSequentialGroup()
-                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(jPanel4Layout.createSequentialGroup()
-                                            .addGap(167, 167, 167)
-                                            .addComponent(jButtonActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(jPanel4Layout.createSequentialGroup()
-                                            .addGap(163, 163, 163)
-                                            .addComponent(jLabelSoliName, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGap(61, 61, 61)
-                                    .addComponent(jButtonDelete)
-                                    .addGap(0, 1, Short.MAX_VALUE))
+                                    .addComponent(jLabel15)
+                                    .addGap(69, 69, 69)
+                                    .addComponent(jScrollPane3))
                                 .addGroup(jPanel4Layout.createSequentialGroup()
                                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addGroup(jPanel4Layout.createSequentialGroup()
@@ -483,13 +439,28 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jComboBoxNewDepa, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jComboBoxNewTipo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))))
+                                        .addComponent(jComboBoxNewTipo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addGroup(jPanel4Layout.createSequentialGroup()
+                                    .addGap(163, 163, 163)
+                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                            .addComponent(jLabelSoliName, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(134, 134, 134)
+                                            .addComponent(jButtonDelete)
+                                            .addGap(0, 31, Short.MAX_VALUE))
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                            .addComponent(jButtonActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(0, 0, Short.MAX_VALUE))
+                                        .addGroup(jPanel4Layout.createSequentialGroup()
+                                            .addComponent(jLabel17)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(jLabel1EstadoActu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))))
                 .addGap(45, 45, 45))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(20, Short.MAX_VALUE)
+                .addContainerGap(40, Short.MAX_VALUE)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -518,19 +489,14 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel15)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(11, 11, 11)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel16)
-                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(22, 22, 22)
+                        .addGap(67, 67, 67)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel17)
-                            .addComponent(jLabel1EstadoActu)
-                            .addComponent(jComboBoxNewEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1EstadoActu))
+                        .addGap(28, 28, 28)
                         .addComponent(jButtonActualizar))
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Mantenimiento solicitudes", jPanel4);
@@ -562,14 +528,13 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
 //      obtencion de fecha actual
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
-        if (jTextFieldTituloSolicitud.getText().trim().isEmpty() || jTextAreaDescripcion.getText().trim().isEmpty() || jTextAreaObservacion.getText().trim().isEmpty()) {
+        if (jTextFieldTituloSolicitud.getText().trim().isEmpty() || jTextAreaDescripcion.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, no dejar campos vacios");
         } else {
             try {
                 //            recogemos el valor de los Jcombobox
                 departamento = jComboBoxDepartamentos.getSelectedItem().toString();
                 tipoSolicitud = jComboBoxSolicitud.getSelectedItem().toString();
-                estadosolicitud = jComboBoxEstado.getSelectedItem().toString();
 
 //           obtenemos el id para departamento
                 conexionDB.setRs("SELECT * FROM departamento WHERE departamento = \"" + departamento + "\"");
@@ -582,14 +547,14 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
                 if (rs.next()) {
                     tipoSolicitudid = Integer.toString(rs.getInt(1));
                 }
-                conexionDB.setRs("SELECT * FROM estado_solicitud WHERE estado = \"" + estadosolicitud + "\"");
+                /*conexionDB.setRs("SELECT * FROM estado_solicitud WHERE estado = \"" + estadosolicitud + "\"");
                 rs = conexionDB.getRs();
                 if (rs.next()) {
                     estadoId = Integer.toString(rs.getInt(1));
-                }
+                }*/
 //                fin de optencion de IDS de los ComboBox
 //                Ejecucion de Query
-                conexionDB.setQuery("INSERT INTO solicitud (solicitud_id, departamento_id, tipo_solicitud, caso, descripcion, observaciones, fecha_registro, estado) VALUES (NULL, \"" + departamentoId + "\",\"" + tipoSolicitudid + "\",\"" + jTextFieldTituloSolicitud.getText() + "\",\"" + jTextAreaDescripcion.getText() + "\",\"" + jTextAreaObservacion.getText() + "\",\"" + dtf.format(now) + "\",\"" + estadoId + "\")");
+                conexionDB.setQuery("INSERT INTO solicitud (solicitud_id, departamento_id, tipo_solicitud, caso, descripcion, estado) VALUES (NULL, \"" + departamentoId + "\",\"" + tipoSolicitudid + "\",\"" + jTextFieldTituloSolicitud.getText() + "\",\"" + jTextAreaDescripcion.getText() + "\", 3)");
                 JOptionPane.showMessageDialog(this, "su solicitud se ha procesado con éxito el " + dtf.format(now) );
                 llenadoListadoSolicitudes();
             } catch (SQLException ex) {
@@ -625,31 +590,26 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
                     solicitud = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna));
                     solicitudTitulo = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna + 1));
                     descripcion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna + 2));
-                    observacion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna + 3));
                     break;
                 case 1:
                     solicitud = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 1));
                     solicitudTitulo = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna));
                     descripcion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna + 1));
-                    observacion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna + 2));
                     break;
                 case 2:
                     solicitud = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 2));
                     solicitudTitulo = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 1));
                     descripcion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna));
-                    observacion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna + 1));
                     break;
                 case 3:
                     solicitud = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 3));
                     solicitudTitulo = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 2));
                     descripcion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 1));
-                    observacion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna));
                     break;
                 case 4:
                     solicitud = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 4));
                     solicitudTitulo = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 3));
                     descripcion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 2));
-                    observacion = String.valueOf(listadoSolictudesModel.getValueAt(fila, columna - 1));
                     break;
                 default:
                     System.out.println("Somethin went wrong");
@@ -657,7 +617,6 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
             jLabelSoliName.setText(solicitudTitulo);
             jTextFieldTituloEdit.setText(solicitudTitulo);
             jTextAreaDescripup.setText(descripcion);
-            jTextAreaObservacionesUp.setText(observacion);
             llenadoSegunRelaciones(solicitud);
         }
     }//GEN-LAST:event_jTableListadoMouseClicked
@@ -690,15 +649,13 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
 //        variables
             String newdeparamento = "";
             String newtipo = "";
-            String newestado = "";
 //        nuevas relaciones
             int idnewdepartamenrto = 0;
             int idnewtipo = 0;
-            int idnewestado = 0;
+            
 //        llenado de varibales atrabes de los jtexbox
             newdeparamento = jComboBoxNewDepa.getSelectedItem().toString();
             newtipo = jComboBoxNewTipo.getSelectedItem().toString();
-            newestado = jComboBoxNewEstado.getSelectedItem().toString();
 //      obtecion del id de cada uno de ellos
             conexionDB.setRs("SELECT * FROM departamento WHERE departamento = \"" + newdeparamento + "\"");
             rs = conexionDB.getRs();
@@ -710,13 +667,9 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
             if (rs.next()) {
                 idnewtipo = rs.getInt(1);
             }
-            conexionDB.setRs("SELECT * FROM estado_solicitud WHERE estado = \"" + newestado + "\"");
-            rs = conexionDB.getRs();
-            if (rs.next()) {
-                idnewestado = rs.getInt(1);
-            }
+            
 //       executamos query update
-            conexionDB.setQuery("UPDATE solicitud set departamento_id =\""+idnewdepartamenrto+"\""+", tipo_solicitud = \""+idnewtipo+"\""+", caso = \""+jTextFieldTituloEdit.getText()+"\""+", descripcion = \""+jTextAreaDescripup.getText()+"\""+", observaciones = \""+jTextAreaObservacionesUp.getText()+"\""+", estado = \""+idnewestado+"\""+" WHERE solicitud_id ="+solicitud+"" );
+            conexionDB.setQuery("UPDATE solicitud set departamento_id =\""+idnewdepartamenrto+"\""+", tipo_solicitud = \""+idnewtipo+"\""+", caso = \""+jTextFieldTituloEdit.getText()+"\""+", descripcion = \""+jTextAreaDescripup.getText()+"\""+" WHERE solicitud_id ="+solicitud+"" );
             JOptionPane.showMessageDialog(this, "su solicitud se ha modificado con éxito");
             resetTextFields();
             llenadoListadoSolicitudes();
@@ -731,7 +684,6 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
     public void resetTextFields(){
         jTextFieldTituloEdit.setText("");
         jTextAreaDescripup.setText("");
-        jTextAreaObservacionesUp.setText("");
         jLabelDepartamentoActu.setText("____");
         jLabel1EstadoActu.setText("____");
         jLabel1EstadoActu.setText("____");
@@ -789,9 +741,7 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButtonCrearNuevaSolicitud;
     private javax.swing.JButton jButtonDelete;
     private javax.swing.JComboBox<String> jComboBoxDepartamentos;
-    private javax.swing.JComboBox<String> jComboBoxEstado;
     private javax.swing.JComboBox<String> jComboBoxNewDepa;
-    private javax.swing.JComboBox<String> jComboBoxNewEstado;
     private javax.swing.JComboBox<String> jComboBoxNewTipo;
     private javax.swing.JComboBox<String> jComboBoxSolicitud;
     private javax.swing.JLabel jLabel1;
@@ -801,14 +751,11 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel1EstadoActu;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelDepartamentoActu;
@@ -819,16 +766,12 @@ public class SolicitudesListado extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTableListado;
     private javax.swing.JTextArea jTextAreaDescripcion;
     private javax.swing.JTextArea jTextAreaDescripup;
-    private javax.swing.JTextArea jTextAreaObservacion;
-    private javax.swing.JTextArea jTextAreaObservacionesUp;
     private javax.swing.JTextField jTextFieldTituloEdit;
     private javax.swing.JTextField jTextFieldTituloSolicitud;
     // End of variables declaration//GEN-END:variables
