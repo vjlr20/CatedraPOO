@@ -9,13 +9,56 @@ package sv.edu.udb.admin;
  *
  * @author Victor López
  */
-public class JefesAreasListado extends javax.swing.JInternalFrame {
 
+import java.sql.*;
+import javax.swing.table.DefaultTableModel;
+import sv.edu.udb.db.Conexion;
+
+public class JefesAreasListado extends javax.swing.JInternalFrame {
+    DefaultTableModel modeloArea = null;
+    public static int bandera = 0;
+    ResultSet resultado = null;
+    
+    Conexion conex = new Conexion();
+    
     /**
      * Creates new form JefesAreasListado
      */
-    public JefesAreasListado() {
+    public JefesAreasListado() throws SQLException {
         initComponents();
+        
+        bandera = 1;
+        
+        initComponents();
+        
+        Object[][] data = null;
+        
+        String[] columnas = { "#", "Nombre", "Usuario", "Correo", "Fecha de registro", "Estado" };
+        
+        modeloArea = new DefaultTableModel(data, columnas);
+        this.JefesAreajTable.setModel(modeloArea);
+        
+        conex.setRs("SELECT CONCAT(usuarios.nombres, ' ', usuarios.apellidos) AS nombre, usuarios.usuario, usuarios.correo, DATE_FORMAT(usuarios.fecha_registro, '%d - %m -%Y') AS registro, estado_usuario.estado FROM `usuarios` INNER JOIN estado_usuario ON usuarios.estado = estado_usuario.estado_usuario_id WHERE usuarios.tipo_usuario = 2");
+        
+        listarJefesArea();
+    }
+    
+    public void listarJefesArea() throws SQLException {
+        resultado = conex.getRs();
+        
+        int i = 0;
+
+        while (resultado.next()) {
+            i++;
+            
+            Object[] newRow = {
+                i, resultado.getString(1), resultado.getString(2), resultado.getString(3), resultado.getString(4), resultado.getString(5), 
+            };
+
+            modeloArea.addRow(newRow);
+        }
+
+        resultado.close();
     }
 
     /**
@@ -27,21 +70,130 @@ public class JefesAreasListado extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        txtBuscar = new javax.swing.JTextField();
+        cmbEstadoJefe = new javax.swing.JComboBox<>();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        JefesAreajTable = new javax.swing.JTable();
+
+        setClosable(true);
+        setMinimumSize(new java.awt.Dimension(44, 22));
+        setNormalBounds(new java.awt.Rectangle(0, 0, 44, 0));
+        setPreferredSize(new java.awt.Dimension(615, 404));
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosing(evt);
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+            }
+        });
+
+        jLabel1.setText("Buscar:");
+
+        txtBuscar.setName("txtBuscar"); // NOI18N
+        txtBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtBuscarKeyPressed(evt);
+            }
+        });
+
+        cmbEstadoJefe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Activo", "Inactivo" }));
+        cmbEstadoJefe.setName("cmbEstadoJefe"); // NOI18N
+
+        JefesAreajTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        JefesAreajTable.setName("JefesAreajTable"); // NOI18N
+        jScrollPane1.setViewportView(JefesAreajTable);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(88, 88, 88)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(cmbEstadoJefe, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(136, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbEstadoJefe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void txtBuscarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyPressed
+        while (modeloArea.getRowCount() != 0) modeloArea.removeRow(0) ;
+
+        String busqueda = txtBuscar.getText();
+        int estado = cmbEstadoJefe.getSelectedIndex() + 1;
+
+        String sql = "SELECT CONCAT(usuarios.nombres, ' ', usuarios.apellidos) AS nombre, usuarios.usuario, usuarios.correo, DATE_FORMAT(usuarios.fecha_registro, '%d - %m -%Y') AS registro, estado_usuario.estado FROM `usuarios` INNER JOIN estado_usuario ON usuarios.estado = estado_usuario.estado_usuario_id WHERE tipo_usuario = 2 AND (usuario LIKE '%" + busqueda + "%' OR CONCAT(nombres, '', apellidos) LIKE '%" + busqueda + "%') AND usuarios.estado = " + estado;
+
+        conex.setRs(sql);
+
+        try {
+            listarJefesArea();
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            // Logger.getLogger(AlumnosListado.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_txtBuscarKeyPressed
+
+    private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
+        try {
+            bandera = 0;
+            
+            this.dispose();
+            
+            conex.cerrarConexion();
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            // Logger.getLogger(AlumnosListado.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formInternalFrameClosing
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable JefesAreajTable;
+    private javax.swing.JComboBox<String> cmbEstadoJefe;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField txtBuscar;
     // End of variables declaration//GEN-END:variables
 }

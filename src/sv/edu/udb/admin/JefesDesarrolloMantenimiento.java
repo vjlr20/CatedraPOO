@@ -52,7 +52,7 @@ public class JefesDesarrolloMantenimiento extends javax.swing.JInternalFrame {
         
         modeloMantenimiento.setRowCount(0);
         
-        conex.setRs("SELECT usuarios.nombres, usuarios.apellidos, usuarios.usuario, usuarios.correo, DATE_FORMAT(usuarios.fecha_registro, '%d - %m -%Y') AS registro, estado_usuario.estado, usuarios.usuario_id FROM `usuarios` INNER JOIN estado_usuario ON usuarios.estado = estado_usuario.estado_usuario_id WHERE usuarios.tipo_usuario = 4");
+        conex.setRs("SELECT usuarios.nombres, usuarios.apellidos, usuarios.usuario, usuarios.correo, DATE_FORMAT(usuarios.fecha_registro, '%d - %m -%Y') AS registro, estado_usuario.estado, usuarios.usuario_id FROM `usuarios` INNER JOIN estado_usuario ON usuarios.estado = estado_usuario.estado_usuario_id WHERE usuarios.tipo_usuario = 4 ORDER BY usuarios.usuario_id DESC");
         
         resultado = conex.getRs();
         
@@ -258,6 +258,7 @@ public class JefesDesarrolloMantenimiento extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        JefesDesarrollojTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         JefesDesarrollojTable.setName("JefesDesarrollojTable"); // NOI18N
         JefesDesarrollojTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {

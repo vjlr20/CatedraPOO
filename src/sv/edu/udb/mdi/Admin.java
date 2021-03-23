@@ -38,8 +38,8 @@ public class Admin extends javax.swing.JFrame {
         listadoDepaMenuItem = new javax.swing.JMenuItem();
         formDepaMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
-        cutMenuItem = new javax.swing.JMenuItem();
-        copyMenuItem = new javax.swing.JMenuItem();
+        listadoAreaMenuItem = new javax.swing.JMenuItem();
+        AreaManteMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         listadoDesarrolloMenuItem = new javax.swing.JMenuItem();
         DesarrolloManteMenuItem = new javax.swing.JMenuItem();
@@ -51,10 +51,20 @@ public class Admin extends javax.swing.JFrame {
 
         listadoDepaMenuItem.setMnemonic('o');
         listadoDepaMenuItem.setText("Listado");
+        listadoDepaMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                listadoDepaMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(listadoDepaMenuItem);
 
         formDepaMenuItem.setMnemonic('s');
         formDepaMenuItem.setText("Mantenimiento");
+        formDepaMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                formDepaMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(formDepaMenuItem);
 
         menuBar.add(fileMenu);
@@ -62,19 +72,26 @@ public class Admin extends javax.swing.JFrame {
         editMenu.setMnemonic('e');
         editMenu.setText("Jefes de departamentos");
 
-        cutMenuItem.setMnemonic('t');
-        cutMenuItem.setText("Listado");
-        cutMenuItem.setToolTipText("");
-        cutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        listadoAreaMenuItem.setMnemonic('t');
+        listadoAreaMenuItem.setText("Listado");
+        listadoAreaMenuItem.setToolTipText("");
+        listadoAreaMenuItem.setName("listadoAreaMenuItem"); // NOI18N
+        listadoAreaMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cutMenuItemActionPerformed(evt);
+                listadoAreaMenuItemActionPerformed(evt);
             }
         });
-        editMenu.add(cutMenuItem);
+        editMenu.add(listadoAreaMenuItem);
 
-        copyMenuItem.setMnemonic('y');
-        copyMenuItem.setText("Mantenimiento");
-        editMenu.add(copyMenuItem);
+        AreaManteMenuItem.setMnemonic('y');
+        AreaManteMenuItem.setText("Mantenimiento");
+        AreaManteMenuItem.setName("AreaManteMenuItem"); // NOI18N
+        AreaManteMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AreaManteMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(AreaManteMenuItem);
 
         menuBar.add(editMenu);
 
@@ -118,9 +135,21 @@ public class Admin extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cutMenuItemActionPerformed
-        
-    }//GEN-LAST:event_cutMenuItemActionPerformed
+    private void listadoAreaMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listadoAreaMenuItemActionPerformed
+        try {
+            if (JefesAreasListado.bandera == 0) {
+                JefesAreasListado jefesAreaListado = new JefesAreasListado();
+
+                desktopPane.add(jefesAreaListado);
+                jefesAreaListado.show();
+
+                JefesAreasListado.bandera = 1;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            // Logger.getLogger(MDI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_listadoAreaMenuItemActionPerformed
 
     private void listadoDesarrolloMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listadoDesarrolloMenuItemActionPerformed
         try {
@@ -153,6 +182,54 @@ public class Admin extends javax.swing.JFrame {
             // Logger.getLogger(MDI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_DesarrolloManteMenuItemActionPerformed
+
+    private void AreaManteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AreaManteMenuItemActionPerformed
+        try {
+            if (JefesAreasMantenimiento.bandera == 0) {
+                JefesAreasMantenimiento jefesAreaMantenimiento = new JefesAreasMantenimiento();
+
+                desktopPane.add(jefesAreaMantenimiento);
+                jefesAreaMantenimiento.show();
+
+                JefesAreasMantenimiento.bandera = 1;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            // Logger.getLogger(MDI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_AreaManteMenuItemActionPerformed
+
+    private void listadoDepaMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listadoDepaMenuItemActionPerformed
+        try {
+            if (DepartamentoListado.bandera == 0) {
+                DepartamentoListado depaListado = new DepartamentoListado();
+
+                desktopPane.add(depaListado);
+                depaListado.show();
+
+                DepartamentoListado.bandera = 1;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            // Logger.getLogger(MDI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_listadoDepaMenuItemActionPerformed
+
+    private void formDepaMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_formDepaMenuItemActionPerformed
+        try {
+            if (DepartamentoMantenimiento.bandera == 0) {
+                DepartamentoMantenimiento depaManten = new DepartamentoMantenimiento();
+
+                desktopPane.add(depaManten);
+                depaManten.show();
+
+                DepartamentoMantenimiento.bandera = 1;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex);
+            // Logger.getLogger(MDI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formDepaMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -190,14 +267,14 @@ public class Admin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem AreaManteMenuItem;
     private javax.swing.JMenuItem DesarrolloManteMenuItem;
-    private javax.swing.JMenuItem copyMenuItem;
-    private javax.swing.JMenuItem cutMenuItem;
     private javax.swing.JDesktopPane desktopPane;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem formDepaMenuItem;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenuItem listadoAreaMenuItem;
     private javax.swing.JMenuItem listadoDepaMenuItem;
     private javax.swing.JMenuItem listadoDesarrolloMenuItem;
     private javax.swing.JMenuBar menuBar;
