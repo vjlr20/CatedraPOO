@@ -32,6 +32,22 @@ public class Login extends javax.swing.JFrame {
         // btnIngresar.setEnabled(false);
     }
     
+    private void getAreaUsuario(String user) {
+        String sql = "SELECT departamento_id FROM usuarios INNER JOIN departamento ON departamento.jefe = usuarios.usuario_id WHERE usuario = '" + user + "'";
+        
+        try {
+            conex.setRs(sql);
+            
+            ResultSet rs = conex.getRs();
+        
+            while (rs.next()) {
+                new JefeAreasFuncionales().areas.add(rs.getString(1));
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
     private void mostrarVentana(int tipo, String user) {
         JOptionPane.showMessageDialog(null, "Bienvenido " + user + ".", "Bienvenido", JOptionPane.PLAIN_MESSAGE);
         
@@ -42,6 +58,8 @@ public class Login extends javax.swing.JFrame {
                 break;
 
             case 2:
+                getAreaUsuario(user);
+                
                 new JefeAreasFuncionales().setVisible(true);
                 this.dispose();
                 break;
