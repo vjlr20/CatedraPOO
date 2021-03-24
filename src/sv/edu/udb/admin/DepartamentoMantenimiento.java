@@ -38,7 +38,7 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
         
         Object[][] data = null;
         
-        String[] columnas = { "#", "Departamento", "Jefe", "Fecha de registro" };
+        String[] columnas = { "#", "Código", "Departamento", "Jefe", "Fecha de registro" };
         
         modeloDepa = new DefaultTableModel(data, columnas);
         this.DepartamentosjTable.setModel(modeloDepa);
@@ -51,7 +51,7 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
     private void llenarComboJefes() throws SQLException {
         jefes = new ArrayList<>();
         
-        conex.setRs("SELECT usuarios.usuario_id, usuarios.nombres, usuarios.apellidos FROM departamento RIGHT JOIN usuarios ON usuarios.usuario_id = departamento.jefe WHERE usuarios.tipo_usuario = 2 AND usuarios.estado = 1");
+        conex.setRs("SELECT DISTINCT usuarios.usuario_id, usuarios.nombres, usuarios.apellidos FROM departamento RIGHT JOIN usuarios ON usuarios.usuario_id = departamento.jefe WHERE usuarios.tipo_usuario = 2 AND usuarios.estado = 1");
         
         ResultSet rs = conex.getRs();
         
@@ -82,7 +82,7 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
         
         modeloDepa.setRowCount(0);
         
-        conex.setRs("SELECT departamento.departamento, usuarios.nombres, usuarios.apellidos, departamento.fecha_registro, departamento.departamento_id, usuarios.usuario_id FROM departamento INNER JOIN usuarios ON usuarios.usuario_id = departamento.jefe");
+        conex.setRs("SELECT departamento.codigo, departamento.departamento, usuarios.nombres, usuarios.apellidos, departamento.fecha_registro, departamento.departamento_id, usuarios.usuario_id FROM departamento INNER JOIN usuarios ON usuarios.usuario_id = departamento.jefe");
         
         resultado = conex.getRs();
         
@@ -92,16 +92,17 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
             i++;
             
             Object[] newRow = {
-                i, resultado.getString(1), resultado.getString(2) + " " + resultado.getString(3), resultado.getString(4)
+                i, resultado.getString(1), resultado.getString(2), resultado.getString(3) + " " + resultado.getString(4), resultado.getString(5)
             };
             
             ArrayList<String> depa = new ArrayList<>();
             
-            depa.add(resultado.getString(5));
+            depa.add(resultado.getString(6));
             depa.add(resultado.getString(1));
             depa.add(resultado.getString(2));
             depa.add(resultado.getString(3));
-            depa.add(resultado.getString(6));
+            depa.add(resultado.getString(4));
+            depa.add(resultado.getString(7));
             depa.add(String.valueOf(i));
             
             departamentos.add(depa);
@@ -114,6 +115,7 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
     
     private void limpiarFormulario() {
         txtID.setText("");
+        txtCodigo.setText("");
         txtDepartamento.setText("");
         cmbJefes.setSelectedIndex(0);
         
@@ -125,10 +127,11 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
     
     private void mostrarDatos(ArrayList<String> info) {
         txtID.setText(info.get(0));
-        txtDepartamento.setText(info.get(1));
+        txtCodigo.setText(info.get(1));
+        txtDepartamento.setText(info.get(2));
         
         for (int i = 0; i < jefes.size(); i++) {
-            if (info.get(4).equals(jefes.get(i).get(0))) {
+            if (info.get(5).equals(jefes.get(i).get(0))) {
                 cmbJefes.setSelectedIndex(Integer.parseInt(jefes.get(i).get(3)));
                 break;
             }
@@ -156,8 +159,9 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
         }
     }
     
-    private void ingresoDatos(String depa, int jefeArea) {
-        String sql = "INSERT INTO departamento (departamento, jefe) VALUES ("
+    private void ingresoDatos(String cod, String depa, int jefeArea) {
+        String sql = "INSERT INTO departamento (codigo, departamento, jefe) VALUES ("
+                + "'" + cod + "', "
                 + "'" + depa + "', "
                 + jefeArea + ")";
         
@@ -174,8 +178,9 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
         }
     }
     
-    private void actualizarDatos(String depa, int jefeArea, int id) {
+    private void actualizarDatos(String cod, String depa, int jefeArea, int id) {
         String sql = "UPDATE departamento SET "
+                + "codigo = '" + cod + "', "
                 + "departamento = '" + depa + "', "
                 + "jefe = " + jefeArea
                 + " WHERE departamento_id = " + id;
@@ -214,6 +219,8 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
         txtDepartamento = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         cmbJefes = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
+        txtCodigo = new javax.swing.JTextField();
 
         setClosable(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -303,6 +310,15 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
 
         cmbJefes.setName("cmbJefes"); // NOI18N
 
+        jLabel6.setText("Código:");
+
+        txtCodigo.setName("txtCodigo"); // NOI18N
+        txtCodigo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCodigoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -311,17 +327,6 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnNuevo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEliminar)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 79, Short.MAX_VALUE)
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(155, 155, 155))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
@@ -329,11 +334,29 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtDepartamento)
                             .addComponent(cmbJefes, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(128, 128, 128)
-                .addComponent(btnAccion)
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addContainerGap())
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btnNuevo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnEliminar))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(122, 122, 122)
+                                .addComponent(btnAccion)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 94, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(112, 112, 112))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -346,7 +369,11 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(19, 19, 19)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtDepartamento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -356,7 +383,7 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
                     .addComponent(cmbJefes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(btnAccion)
-                .addGap(17, 17, 17))
+                .addGap(47, 47, 47))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -367,8 +394,8 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 421, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -414,6 +441,12 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
         int error = 0;
         
         String departamento = txtDepartamento.getText();
+        String codigo = txtCodigo.getText();
+        
+        if (codigo.replace(" ", "").length() < 1) {
+            JOptionPane.showMessageDialog(null, "Complete los datos correctamente", "Error al ingresar", JOptionPane.ERROR_MESSAGE);
+            error++;
+        }
         
         if (departamento.replace(" ", "").length() < 1) {
             JOptionPane.showMessageDialog(null, "Complete los datos correctamente", "Error al ingresar", JOptionPane.ERROR_MESSAGE);
@@ -431,20 +464,21 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
             }
             
             if (btnAccion.getText().equals("Ingresar")) {
-                ingresoDatos(departamento, id);
+                ingresoDatos(codigo, departamento, id);
             }
             
             if (btnAccion.getText().equals("Actualizar")) {
-                actualizarDatos(departamento, id, Integer.parseInt(txtID.getText()));
+                actualizarDatos(codigo, departamento, id, Integer.parseInt(txtID.getText()));
             }
         }
     }//GEN-LAST:event_btnAccionActionPerformed
 
     private void DepartamentosjTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DepartamentosjTableMouseClicked
         int fila = DepartamentosjTable.rowAtPoint(evt.getPoint());
-
+        System.out.println(fila);
         for (int i = 0; i < departamentos.size(); i++) {
-            if (fila == (Integer.parseInt(departamentos.get(i).get(5)) - 1)) {
+            System.out.println(departamentos.get(i));
+            if (fila == (Integer.parseInt(departamentos.get(i).get(6)) - 1)) {
                 mostrarDatos(departamentos.get(i));
                 break;
             }
@@ -459,6 +493,10 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_txtDepartamentoKeyPressed
 
+    private void txtCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCodigoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCodigoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable DepartamentosjTable;
@@ -469,8 +507,10 @@ public class DepartamentoMantenimiento extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField txtCodigo;
     private javax.swing.JTextField txtDepartamento;
     private javax.swing.JTextField txtID;
     // End of variables declaration//GEN-END:variables

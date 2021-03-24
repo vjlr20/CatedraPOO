@@ -29,8 +29,6 @@ public class JefesAreasListado extends javax.swing.JInternalFrame {
         
         bandera = 1;
         
-        initComponents();
-        
         Object[][] data = null;
         
         String[] columnas = { "#", "Nombre", "Usuario", "Correo", "Fecha de registro", "Estado" };

@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import sv.edu.udb.jefe.SolicitudesListado;
+import sv.edu.udb.jefe.*;
 
 /**
  *
@@ -39,7 +39,8 @@ public class JefeAreasFuncionales extends javax.swing.JFrame {
         ProgresoMenu = new javax.swing.JMenu();
         SolicitudesMenuItem = new javax.swing.JMenuItem();
         RechazadasMenuItem = new javax.swing.JMenuItem();
-        pasteMenuItem = new javax.swing.JMenuItem();
+        ProgresoMenu1 = new javax.swing.JMenu();
+        CasosProgesoMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -57,13 +58,28 @@ public class JefeAreasFuncionales extends javax.swing.JFrame {
 
         RechazadasMenuItem.setMnemonic('y');
         RechazadasMenuItem.setText("Rechazadas");
+        RechazadasMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RechazadasMenuItemActionPerformed(evt);
+            }
+        });
         ProgresoMenu.add(RechazadasMenuItem);
 
-        pasteMenuItem.setMnemonic('p');
-        pasteMenuItem.setText("En progreso");
-        ProgresoMenu.add(pasteMenuItem);
-
         menuBar.add(ProgresoMenu);
+
+        ProgresoMenu1.setMnemonic('e');
+        ProgresoMenu1.setText("Casos");
+
+        CasosProgesoMenuItem.setMnemonic('t');
+        CasosProgesoMenuItem.setText("En progreso");
+        CasosProgesoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CasosProgesoMenuItemActionPerformed(evt);
+            }
+        });
+        ProgresoMenu1.add(CasosProgesoMenuItem);
+
+        menuBar.add(ProgresoMenu1);
 
         setJMenuBar(menuBar);
 
@@ -94,6 +110,32 @@ public class JefeAreasFuncionales extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_SolicitudesMenuItemActionPerformed
+
+    private void RechazadasMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RechazadasMenuItemActionPerformed
+        if(SolicitudesMantenimiento.bandera == 0){          
+            try {
+                SolicitudesMantenimiento sm = new SolicitudesMantenimiento(areas);
+                               
+                desktopPane.add(sm);
+                sm.show();
+            } catch (SQLException ex) {
+                Logger.getLogger(JefeAreasFuncionales.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_RechazadasMenuItemActionPerformed
+
+    private void CasosProgesoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CasosProgesoMenuItemActionPerformed
+        if(CasosAperturados.bandera == 0){          
+            try {
+                CasosAperturados casos = new CasosAperturados(areas);
+                               
+                desktopPane.add(casos);
+                casos.show();
+            } catch (SQLException ex) {
+                Logger.getLogger(JefeAreasFuncionales.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_CasosProgesoMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -131,12 +173,13 @@ public class JefeAreasFuncionales extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem CasosProgesoMenuItem;
     private javax.swing.JMenu ProgresoMenu;
+    private javax.swing.JMenu ProgresoMenu1;
     private javax.swing.JMenuItem RechazadasMenuItem;
     private javax.swing.JMenuItem SolicitudesMenuItem;
     private javax.swing.JDesktopPane desktopPane;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem pasteMenuItem;
     // End of variables declaration//GEN-END:variables
 
 }

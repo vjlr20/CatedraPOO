@@ -33,12 +33,12 @@ public class DepartamentoListado extends javax.swing.JInternalFrame {
         
         Object[][] data = null;
         
-        String[] columnas = { "#", "Departamento", "Jefe", "Fecha de registro" };
+        String[] columnas = { "#", "Código", "Departamento", "Jefe", "Fecha de registro" };
         
         modeloDepa = new DefaultTableModel(data, columnas);
         this.JefesAreajTable.setModel(modeloDepa);
         
-        conex.setRs("SELECT departamento.departamento, CONCAT(usuarios.nombres, ' ', usuarios.apellidos) AS encargado, departamento.fecha_registro FROM departamento INNER JOIN usuarios ON usuarios.usuario_id = departamento.jefe");
+        conex.setRs("SELECT departamento.codigo, departamento.departamento, CONCAT(usuarios.nombres, ' ', usuarios.apellidos) AS encargado, departamento.fecha_registro FROM departamento INNER JOIN usuarios ON usuarios.usuario_id = departamento.jefe");
         
         listarDepartamentos();
     }
@@ -52,7 +52,7 @@ public class DepartamentoListado extends javax.swing.JInternalFrame {
             i++;
             
             Object[] newRow = {
-                i, resultado.getString(1), resultado.getString(2), resultado.getString(3)
+                i, resultado.getString(1), resultado.getString(2), resultado.getString(3), resultado.getString(4), 
             };
 
             modeloDepa.addRow(newRow);
@@ -152,7 +152,7 @@ public class DepartamentoListado extends javax.swing.JInternalFrame {
 
         String busqueda = txtBuscar.getText();
 
-        String sql = "SELECT departamento.departamento, CONCAT(usuarios.nombres, ' ', usuarios.apellidos) AS encargado, departamento.fecha_registro FROM departamento INNER JOIN usuarios ON usuarios.usuario_id = departamento.jefe WHERE departamento.departamento LIKE '%" + busqueda + "%' OR CONCAT(usuarios.nombres, ' ', usuarios.apellidos) LIKE '%" + busqueda + "%'";
+        String sql = "SELECT departamento.codigo, departamento.departamento, CONCAT(usuarios.nombres, ' ', usuarios.apellidos) AS encargado, departamento.fecha_registro FROM departamento INNER JOIN usuarios ON usuarios.usuario_id = departamento.jefe WHERE departamento.departamento LIKE '%" + busqueda + "%' OR CONCAT(usuarios.nombres, ' ', usuarios.apellidos) LIKE '%" + busqueda + "%'";
 
         conex.setRs(sql);
 
