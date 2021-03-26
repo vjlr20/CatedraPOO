@@ -49,7 +49,7 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
         modeloCasos = new DefaultTableModel(data, columnas);
         this.CasosEnProgresojTable.setModel(modeloCasos);
 
-        String sql = "SELECT caso.caso_id, solicitud.caso, caso.codigo, solicitud.descripcion, caso_descripcion, CONCAT(programadores.nombres, ' ', programadores.apellidos) AS programador, caso.fecha_limite, CONCAT(testers.nombres, ' ', testers.apellidos) AS tester, caso.fecha_registro FROM caso INNER JOIN solicitud ON solicitud.solicitud_id = caso.solicitud_id INNER JOIN usuarios AS programadores ON programadores.usuario_id = caso.programador INNER JOIN usuarios AS testers ON testers.usuario_id = caso.tester INNER JOIN departamento ON solicitud.departamento_id = departamento.departamento_id WHERE (";
+        String sql = "SELECT caso.caso_id, solicitud.caso, caso.codigo, solicitud.descripcion, caso_descripcion, CONCAT(programadores.nombres, ' ', programadores.apellidos) AS programador, caso.fecha_limite, CONCAT(testers.nombres, ' ', testers.apellidos) AS tester, caso.fecha_registro FROM caso INNER JOIN solicitud ON solicitud.solicitud_id = caso.solicitud_id INNER JOIN usuarios AS programadores ON programadores.usuario_id = caso.programador INNER JOIN usuarios AS testers ON testers.usuario_id = caso.tester INNER JOIN departamento ON solicitud.departamento_id = departamento.departamento_id WHERE caso.estado = 5 AND (";
 
         for (int i = 0; i < areas.size(); i++) {
             if (i == (areas.size() - 1)) {
