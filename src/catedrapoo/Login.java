@@ -48,6 +48,23 @@ public class Login extends javax.swing.JFrame {
         }
     }
     
+    private void getAreaEmpleado(String user) {
+        String sql = "SELECT usuarios.usuario_id FROM usuarios WHERE usuarios.usuario = '" + user + "'";
+        
+        try {
+            conex.setRs(sql);
+            
+            ResultSet rs = conex.getRs();
+        
+            while (rs.next()) {
+                new EmpleadoAreasFuncionales().idEmpleado = rs.getInt(1);
+                new Programadores().idProgramador = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
     private void mostrarVentana(int tipo, String user) {
         JOptionPane.showMessageDialog(null, "Bienvenido " + user + ".", "Bienvenido", JOptionPane.PLAIN_MESSAGE);
         
@@ -65,6 +82,8 @@ public class Login extends javax.swing.JFrame {
                 break;
 
             case 3:
+                getAreaEmpleado(user);
+                
                 new EmpleadoAreasFuncionales().setVisible(true);
                 this.dispose();
                 break;
@@ -75,6 +94,8 @@ public class Login extends javax.swing.JFrame {
                 break;
 
             case 5:
+                getAreaEmpleado(user);
+                
                 new Programadores().setVisible(true);
                 this.dispose();
                 break;

@@ -12,12 +12,12 @@ package sv.edu.udb.programador;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.logging.*;
-import javax.swing.JOptionPane;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import sv.edu.udb.db.Conexion;
 
-public class CasosAsignados extends javax.swing.JInternalFrame {
+public class CasosRechazados extends javax.swing.JInternalFrame {
     DefaultTableModel modeloCasos = null, modeloBitacora = null;
     
     static int programador = 0;
@@ -28,9 +28,9 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
     Conexion conex = new Conexion();
     
     /**
-     * Creates new form CasosAsignados
+     * Creates new form CasosRechazados
      */
-    public CasosAsignados(int id) throws SQLException {
+    public CasosRechazados(int id) throws SQLException {
         initComponents();
         
         programador = id;
@@ -52,7 +52,7 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
         
         casos = new ArrayList<>();
         
-        String sql = "SELECT caso.codigo, solicitud.caso, solicitud.descripcion, caso.fecha_limite, caso.caso_id, caso.solicitud_id, caso.caso_descripcion FROM caso INNER JOIN solicitud ON caso.solicitud_id = solicitud.solicitud_id INNER JOIN usuarios ON caso.programador = usuarios.usuario_id WHERE caso.programador = " + id + " AND caso.estado = 5";
+        String sql = "SELECT caso.codigo, solicitud.caso, solicitud.descripcion, caso.fecha_limite, caso.caso_id, caso.solicitud_id, caso.caso_descripcion FROM caso INNER JOIN solicitud ON caso.solicitud_id = solicitud.solicitud_id INNER JOIN usuarios ON caso.programador = usuarios.usuario_id WHERE caso.programador = " + id + " AND caso.estado = 1";
         
         conex.setRs(sql);
         
@@ -72,7 +72,7 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
             };
             
             ArrayList<String> caso = new ArrayList<>();
-            
+            // Caso_id: 4
             caso.add(rs.getString(1));
             caso.add(rs.getString(2));
             caso.add(rs.getString(3));
@@ -90,25 +90,8 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
         rs.close();
     }
     
-    private void mostrarCaso(ArrayList<String> info) throws SQLException {
-        // System.out.println(info);
-        lblID.setText(info.get(4));
-        lblCodigo.setText(info.get(0));
-        lblCaso.setText(info.get(1));
-        txtDescripcion.setText(info.get(2));
-        txtNotas.setText(info.get(7));
-        // lblEntrega.setText(info.get(3));
-    }
-    
-    private void enviarTest(int id) throws SQLException {
-        // System.out.println(id);
-        String sql = "UPDATE caso SET estado = 2 WHERE caso_id = " + id;
-        // System.out.println(sql);
-        conex.setQuery(sql);
+    private void mostrarObservaciones(int id) throws SQLException {
         
-        JOptionPane.showMessageDialog(this, "Caso Enviado a revisión del área solicitante");
-        
-        listarCasos(programador);
     }
 
     /**
@@ -125,17 +108,12 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         lblID = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         lblCaso = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txtDescripcion = new javax.swing.JTextArea();
         lblCodigo = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        txtNotas = new javax.swing.JTextArea();
-        btnEnviar = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        observacionesJTable = new javax.swing.JTable();
 
         setClosable(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -180,70 +158,50 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
 
         lblID.setText("_______");
 
-        jLabel3.setText("Descripción:");
-
         lblCaso.setText("____________________");
         lblCaso.setToolTipText("");
 
         jLabel5.setText("Caso:");
 
-        txtDescripcion.setEditable(false);
-        txtDescripcion.setColumns(20);
-        txtDescripcion.setRows(5);
-        jScrollPane2.setViewportView(txtDescripcion);
-
         lblCodigo.setText("_______");
 
         jLabel7.setText("Código:");
 
-        jLabel8.setText("Notas:");
-
-        txtNotas.setEditable(false);
-        txtNotas.setColumns(20);
-        txtNotas.setRows(5);
-        jScrollPane3.setViewportView(txtNotas);
-
-        btnEnviar.setText("Enviar a prueba");
-        btnEnviar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEnviarActionPerformed(evt);
+        observacionesJTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
             }
-        });
+        ));
+        jScrollPane2.setViewportView(observacionesJTable);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(107, 107, 107)
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblID)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblCodigo)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel8))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3)
-                            .addComponent(jScrollPane2))))
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 58, Short.MAX_VALUE)
-                .addComponent(lblCaso, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(14, 14, 14))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(129, 129, 129)
-                .addComponent(btnEnviar)
+                .addGap(107, 107, 107)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblID)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblCodigo)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 53, Short.MAX_VALUE)
+                .addComponent(lblCaso, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(19, 19, 19))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addGap(16, 16, 16)
@@ -259,24 +217,16 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
                     .addComponent(lblID)
                     .addComponent(jLabel7)
                     .addComponent(lblCodigo))
-                .addGap(20, 20, 20)
-                .addComponent(lblCaso)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
-                .addComponent(btnEnviar, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addComponent(lblCaso)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addGap(61, 61, 61)
                     .addComponent(jLabel5)
-                    .addContainerGap(293, Short.MAX_VALUE)))
+                    .addContainerGap(235, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -292,10 +242,10 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 335, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -317,14 +267,12 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_formInternalFrameClosing
 
     private void casosJTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_casosJTableMouseClicked
-        // btnAceptar.setEnabled(true);
-        
         int fila = casosJTable.rowAtPoint(evt.getPoint());
         
         for (int i = 0; i < casos.size(); i++) {
             if (fila == (Integer.parseInt(casos.get(i).get(5)) - 1)) {
                 try {
-                    mostrarCaso(casos.get(i));
+                    mostrarObservaciones(Integer.parseInt(casos.get(i).get(4)));
                 } catch (SQLException ex) {
                     Logger.getLogger(CasosAsignados.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -333,35 +281,18 @@ public class CasosAsignados extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_casosJTableMouseClicked
 
-    private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
-        // System.out.println(lblID.getText());
-        int idCaso = Integer.parseInt(lblID.getText());
-        
-        try {
-            enviarTest(idCaso);
-        } catch (SQLException ex) {
-            Logger.getLogger(CasosAsignados.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_btnEnviarActionPerformed
-    
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnEnviar;
     private javax.swing.JTable casosJTable;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lblCaso;
     private javax.swing.JLabel lblCodigo;
     private javax.swing.JLabel lblID;
-    private javax.swing.JTextArea txtDescripcion;
-    private javax.swing.JTextArea txtNotas;
+    private javax.swing.JTable observacionesJTable;
     // End of variables declaration//GEN-END:variables
 }

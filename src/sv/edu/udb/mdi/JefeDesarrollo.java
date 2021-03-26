@@ -38,11 +38,9 @@ public class JefeDesarrollo extends javax.swing.JFrame {
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         CasosListadoMenuItem = new javax.swing.JMenuItem();
+        InformeMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
-        cutMenuItem = new javax.swing.JMenuItem();
-        copyMenuItem = new javax.swing.JMenuItem();
-        pasteMenuItem = new javax.swing.JMenuItem();
-        deleteMenuItem = new javax.swing.JMenuItem();
+        ProgresoMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -60,26 +58,28 @@ public class JefeDesarrollo extends javax.swing.JFrame {
         });
         fileMenu.add(CasosListadoMenuItem);
 
+        InformeMenuItem.setMnemonic('s');
+        InformeMenuItem.setText("Informe");
+        InformeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                InformeMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(InformeMenuItem);
+
         menuBar.add(fileMenu);
 
         editMenu.setMnemonic('e');
         editMenu.setText("Programadores");
 
-        cutMenuItem.setMnemonic('t');
-        cutMenuItem.setText("Cut");
-        editMenu.add(cutMenuItem);
-
-        copyMenuItem.setMnemonic('y');
-        copyMenuItem.setText("Copy");
-        editMenu.add(copyMenuItem);
-
-        pasteMenuItem.setMnemonic('p');
-        pasteMenuItem.setText("Paste");
-        editMenu.add(pasteMenuItem);
-
-        deleteMenuItem.setMnemonic('d');
-        deleteMenuItem.setText("Delete");
-        editMenu.add(deleteMenuItem);
+        ProgresoMenuItem.setMnemonic('p');
+        ProgresoMenuItem.setText("Progreso");
+        ProgresoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ProgresoMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(ProgresoMenuItem);
 
         menuBar.add(editMenu);
 
@@ -115,6 +115,32 @@ public class JefeDesarrollo extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_CasosListadoMenuItemActionPerformed
+
+    private void InformeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InformeMenuItemActionPerformed
+        if(InformesCasos.bandera == 0){          
+            try {
+                InformesCasos informes = new InformesCasos();
+                               
+                desktopPane.add(informes);
+                informes.show();
+            } catch (SQLException ex) {
+                Logger.getLogger(InformesCasos.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_InformeMenuItemActionPerformed
+
+    private void ProgresoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ProgresoMenuItemActionPerformed
+        if(ProgramadoresMonitoreo.bandera == 0){          
+            try {
+                ProgramadoresMonitoreo monitore = new ProgramadoresMonitoreo();
+                               
+                desktopPane.add(monitore);
+                monitore.show();
+            } catch (SQLException ex) {
+                Logger.getLogger(ProgramadoresMonitoreo.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_ProgresoMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
@@ -153,14 +179,12 @@ public class JefeDesarrollo extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem CasosListadoMenuItem;
-    private javax.swing.JMenuItem copyMenuItem;
-    private javax.swing.JMenuItem cutMenuItem;
-    private javax.swing.JMenuItem deleteMenuItem;
+    private javax.swing.JMenuItem InformeMenuItem;
+    private javax.swing.JMenuItem ProgresoMenuItem;
     private javax.swing.JDesktopPane desktopPane;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem pasteMenuItem;
     // End of variables declaration//GEN-END:variables
 
 }
