@@ -9,46 +9,48 @@ package sv.edu.udb.jefe;
  *
  * @author Victor López
  */
-
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import sv.edu.udb.db.Conexion;
 
 public class CasosAperturados extends javax.swing.JInternalFrame {
+
     DefaultTableModel modeloCasos = null;
     public static int bandera = 0;
     ResultSet resultado = null;
-    
+
     static String query = "";
-    
+
     public ArrayList<String> areas = null;
-    
+
     ArrayList<ArrayList<String>> casos = null;
-    
+
     Conexion conex = new Conexion();
-    
+
     /**
      * Creates new form CasosAperturados
      */
     public CasosAperturados(ArrayList<String> areasUsuarios) throws SQLException {
         initComponents();
-        
+
         areas = areasUsuarios;
-        
+
         casos = new ArrayList<>();
-        
+
         bandera = 1;
-        
+
         Object[][] data = null;
-        
-        String[] columnas = { "#", "Caso", "Codigo", "Descripción", "Datos adicionales", "Programador", "Tester" };
-        
+
+        String[] columnas = {"#", "Caso", "Codigo", "Descripción", "Datos adicionales", "Programador", "Tester"};
+
         modeloCasos = new DefaultTableModel(data, columnas);
         this.CasosEnProgresojTable.setModel(modeloCasos);
-        
+
         String sql = "SELECT caso.caso_id, solicitud.caso, caso.codigo, solicitud.descripcion, caso_descripcion, CONCAT(programadores.nombres, ' ', programadores.apellidos) AS programador, caso.fecha_limite, CONCAT(testers.nombres, ' ', testers.apellidos) AS tester, caso.fecha_registro FROM caso INNER JOIN solicitud ON solicitud.solicitud_id = caso.solicitud_id INNER JOIN usuarios AS programadores ON programadores.usuario_id = caso.programador INNER JOIN usuarios AS testers ON testers.usuario_id = caso.tester INNER JOIN departamento ON solicitud.departamento_id = departamento.departamento_id WHERE (";
-        
+
         for (int i = 0; i < areas.size(); i++) {
             if (i == (areas.size() - 1)) {
                 sql += "departamento.departamento_id = " + areas.get(i) + ")";
@@ -56,30 +58,29 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
                 sql += "departamento.departamento_id = " + areas.get(i) + " OR ";
             }
         }
-        
+
         query = sql;
-        
+
         conex.setRs(sql);
-        
+
         listarCasos();
     }
-    
+
     private void listarCasos() throws SQLException {
         modeloCasos.setRowCount(0);
-        
+
         resultado = conex.getRs();
-        
+
         int i = 0;
-        
+
         while (resultado.next()) {
             i++;
-            
+
             Object[] newRow = {
-                i, resultado.getString(2), resultado.getString(3), resultado.getString(4), resultado.getString(5), resultado.getString(6), resultado.getString(8), resultado.getString(9),
-            };
-            
+                i, resultado.getString(2), resultado.getString(3), resultado.getString(4), resultado.getString(5), resultado.getString(6), resultado.getString(8), resultado.getString(9),};
+
             ArrayList<String> caso = new ArrayList<>();
-            
+
             caso.add(resultado.getString(1));
             caso.add(resultado.getString(2));
             caso.add(resultado.getString(3));
@@ -89,22 +90,22 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
             caso.add(resultado.getString(7));
             caso.add(resultado.getString(8));
             caso.add(resultado.getString(9));
-            
+
             caso.add(String.valueOf(i));
-            
+
             casos.add(caso);
-            
+
             modeloCasos.addRow(newRow);
         }
-        
+
         resultado.close();
     }
-    
+
     private void mostrarDatos(ArrayList<String> info) {
         /*for (int i = 0; i < info.size(); i++) {
             System.out.println(i + " -> " + info.get(i));   
         }*/
-        
+
         lblCodigo.setText(info.get(2));
         lblCaso.setText(info.get(1));
         txtRequerimientos.setText(info.get(3));
@@ -112,7 +113,7 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
         lblProgramador.setText(info.get(5));
         lblTester.setText(info.get(7));
         lblLimite.setText(info.get(6));
-        
+
         btnBitacora.setEnabled(true);
     }
 
@@ -150,6 +151,12 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         bitacoraJTables = new javax.swing.JTable();
+        jProgressBar1 = new javax.swing.JProgressBar();
+        jLabelPorcentajeDeAvance = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTextAreaDescripcion = new javax.swing.JTextArea();
+        jLabelFechaBitacora = new javax.swing.JLabel();
 
         setClosable(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -334,7 +341,23 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        bitacoraJTables.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bitacoraJTablesMouseClicked(evt);
+            }
+        });
         jScrollPane4.setViewportView(bitacoraJTables);
+
+        jLabelPorcentajeDeAvance.setText("Porcentaje de avance.");
+
+        jLabel3.setText("Descripcion de bitacora : ");
+
+        jTextAreaDescripcion.setEditable(false);
+        jTextAreaDescripcion.setColumns(20);
+        jTextAreaDescripcion.setRows(5);
+        jScrollPane5.setViewportView(jTextAreaDescripcion);
+
+        jLabelFechaBitacora.setText(".");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -342,14 +365,44 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(101, 101, 101)
+                                .addComponent(jLabelFechaBitacora, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(23, 23, 23))))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane5)
                 .addContainerGap())
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(51, 51, 51)
+                .addComponent(jLabelPorcentajeDeAvance)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabelFechaBitacora, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabelPorcentajeDeAvance)
+                .addGap(18, 18, 18)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -392,7 +445,7 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
 
     private void CasosEnProgresojTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CasosEnProgresojTableMouseClicked
         int fila = CasosEnProgresojTable.rowAtPoint(evt.getPoint());
-        
+
         for (int i = 0; i < casos.size(); i++) {
             if (fila == (Integer.parseInt(casos.get(i).get(9)) - 1)) {
                 mostrarDatos(casos.get(i));
@@ -402,12 +455,14 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_CasosEnProgresojTableMouseClicked
 
     private void txtBuscarKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyPressed
-        while (modeloCasos.getRowCount() != 0) modeloCasos.removeRow(0) ;
+        while (modeloCasos.getRowCount() != 0) {
+            modeloCasos.removeRow(0);
+        }
 
         String busqueda = txtBuscar.getText();
 
         String query1 = query + " AND solicitud.caso LIKE '%" + busqueda + "%' ";
-        
+
         conex.setRs(query1);
 
         try {
@@ -420,32 +475,40 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
 
     private void btnBitacoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBitacoraActionPerformed
         String codigo = lblCodigo.getText();
-        
+        int porcentajeCaso = 0;
+        ArrayList<Integer> porcentaje = new ArrayList<>();
         Object[][] datos = null;
-        
-        String[] columns = { "#", "Caso", "Bitacora", "Fecha" };
-        
+
+        String[] columns = {"#", "Caso", "Bitacora", "Fecha"};
+
         DefaultTableModel modeloBitacora = new DefaultTableModel(datos, columns);
         this.bitacoraJTables.setModel(modeloBitacora);
-        
-        String query = "SELECT bitacora.bitacora_id, caso.codigo, bitacora.descripcion, bitacora.fecha_registro FROM bitacora INNER JOIN caso ON caso.caso_id = bitacora.caso_id WHERE caso.codigo = '" + codigo + "'";
-        
+
+        String query = "SELECT bitacora.bitacora_id, caso.codigo, bitacora.descripcion, bitacora.progreso, bitacora.fecha_registro FROM bitacora INNER JOIN caso ON caso.caso_id = bitacora.caso_id WHERE caso.codigo = '" + codigo + "'";
+
         try {
             conex.setRs(query);
-        
+
             modeloBitacora.setRowCount(0);
 
             resultado = conex.getRs();
 
             while (resultado.next()) {
+                porcentaje.add(resultado.getInt(4));
                 Object[] newRow = {
-                    resultado.getString(1), resultado.getString(2), resultado.getString(3), resultado.getString(4)
-            };
-                
+                    resultado.getString(1), resultado.getString(2), resultado.getString(3), resultado.getString(5)
+                };
+
                 modeloBitacora.addRow(newRow);
             }
-            
+
             resultado.close();
+            // porcentaje de avance en base a las bitacoras
+            for (int d : porcentaje) {
+                porcentajeCaso += d;
+            }
+            jLabelPorcentajeDeAvance.setText("El avance global para este caso es de un: " + "%" + porcentajeCaso);
+            jProgressBar1.setValue(porcentajeCaso);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -454,15 +517,55 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
     private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
         try {
             bandera = 0;
-            
+
             this.dispose();
-            
+
             conex.cerrarConexion();
         } catch (SQLException ex) {
             System.out.println(ex);
             // Logger.getLogger(AlumnosListado.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_formInternalFrameClosing
+
+    private void bitacoraJTablesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_bitacoraJTablesMouseClicked
+        // TODO add your handling code here:
+        String fecha = null;
+        String descripcion = null;
+        String idBitacora = "";
+        int fila = bitacoraJTables.rowAtPoint(evt.getPoint());
+        int colum = bitacoraJTables.columnAtPoint(evt.getPoint());
+        if (fila > -1 && colum > -1) {
+            switch (colum) {
+                case 0:
+                    idBitacora =  bitacoraJTables.getValueAt(fila, colum).toString();
+                    break;
+                case 1:
+                    idBitacora =  bitacoraJTables.getValueAt(fila, colum - 1).toString();
+                    break;
+                case 2:
+                    idBitacora =  bitacoraJTables.getValueAt(fila, colum - 2).toString();
+                    break;
+                case 3:
+                    idBitacora =  bitacoraJTables.getValueAt(fila, colum - 3).toString();
+                    break;
+                default:
+                    System.out.println("Something went wrong");
+            }
+            conex.setRs("select * from bitacora where bitacora_id = " + idBitacora + "");
+            resultado = conex.getRs();
+            try {
+                if (resultado.next()) {
+                    descripcion = resultado.getString(3);
+                    fecha = resultado.getString(5);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(CasosAperturados.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            jLabelFechaBitacora.setText(fecha);
+            jTextAreaDescripcion.setText(descripcion);
+            
+        }
+    }//GEN-LAST:event_bitacoraJTablesMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -473,16 +576,22 @@ public class CasosAperturados extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabelFechaBitacora;
+    private javax.swing.JLabel jLabelPorcentajeDeAvance;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JTextArea jTextAreaDescripcion;
     private javax.swing.JLabel lblCaso;
     private javax.swing.JLabel lblCodigo;
     private javax.swing.JLabel lblLimite;
